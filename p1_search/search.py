@@ -87,16 +87,76 @@ def depthFirstSearch(problem):
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    startState = problem.getStartState()
+    visited = set()
+    fringe = util.Stack()
+    fringe.push((startState, ()))
+
+    while not fringe.isEmpty():
+        currNode = fringe.pop()
+        currState = currNode[0]
+        currPlan = currNode[1]
+        if problem.isGoalState(currState):
+            return list(currPlan)
+        if not currState in visited:
+            visited.add(currState)
+            paths = problem.getSuccessors(currState)
+            for path in paths:
+                newPlan = list(currPlan)
+                newPlan.append(path[1])
+                nextNode = (path[0], tuple(newPlan))
+                if not path[0] in visited:
+                    fringe.push(nextNode)
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    startState = problem.getStartState()
+    visited = set()
+    fringe = util.Queue()
+    fringe.push((startState, ()))
+
+    while not fringe.isEmpty():
+        currNode = fringe.pop()
+        currState = currNode[0]
+        currPlan = currNode[1]
+        if problem.isGoalState(currState):
+            return list(currPlan)
+        if not currState in visited:
+            visited.add(currState)
+            paths = problem.getSuccessors(currState)
+            for path in paths:
+                newPlan = list(currPlan)
+                newPlan.append(path[1])
+                nextNode = (path[0], tuple(newPlan))
+                if not path[0] in visited:
+                    fringe.push(nextNode)
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
+    startState = problem.getStartState()
+    visited = set()
+    actions = []
+    fringe = util.PriorityQueue()
+    fringe.push((startState, None, None, actions), 0)
+
+    while not fringe.isEmpty():
+        currPath = fringe.pop()
+        currState = currPath[0]
+        action = currPath[1]
+        stepCost = currPath[2]
+        actions = currPath[3]
+        if problem.isGoalState(currState):
+            return actions
+        if not currState in visited:
+            visited.add(currState)
+            paths = problem.getSuccessors(currState)
+            for path in paths:
+                if not path[0] in visited:
+                    newActions = list(actions)
+                    newActions.append(path[1])
+                    fringe.push((path[0],path[1],path[2],newActions), problem.getCostOfActions(newActions))
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
@@ -109,8 +169,27 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    startState = problem.getStartState()
+    visited = set()
+    fringe = util.PriorityQueue()
+    fringe.push((startState, ()), heuristic(startState,problem))
 
+    while not fringe.isEmpty():
+        currNode = fringe.pop()
+        currState = currNode[0]
+        currPlan = currNode[1]
+        if problem.isGoalState(currState):
+            return list(currPlan)
+        if not currState in visited:
+            visited.add(currState)
+            paths = problem.getSuccessors(currState)
+            for path in paths:
+                newPlan = list(currPlan)
+                newPlan.append(path[1])
+                nextNode = (path[0], tuple(newPlan))
+                if not path[0] in visited:
+                    fringe.push(nextNode, heuristic(path[0],problem) 
+                            + problem.getCostOfActions(newPlan)) 
 
 # Abbreviations
 bfs = breadthFirstSearch
